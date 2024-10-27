@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Pushable
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -13,8 +15,8 @@ TagManager:
   - UI
   - Ground
   - 
-  - 
-  - 
+  - Wall
+  - Pushable
   - 
   - 
   - 

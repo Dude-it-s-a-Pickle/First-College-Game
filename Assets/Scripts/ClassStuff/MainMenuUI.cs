@@ -19,5 +19,12 @@ public class MainMenuUI : MonoBehaviour
         Application.Quit();
         
     }
+
+    public void PlayPuzzle()
+    {
+
+        SceneManager.LoadScene("GridBased");
+
+    }
     
 }
