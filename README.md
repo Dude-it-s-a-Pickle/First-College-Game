@@ -1,6 +1,6 @@
 # Unity WebGL CI/CD with GitHub Actions
 
-WebGL published here (EDIT IT!) https://McAceJr.github.io/First-College-Game/
+WebGL published here (EDIT IT!) https://Dude-it-s-a-Pickle.github.io/First-College-Game/
 
 # Setup Steps:
 

@@ -30,14 +30,6 @@ jobs:
           fetch-depth: 0
           lfs: 'true'
 
-      # Cache
-      - name: Cache 💾
-        uses: actions/cache@v3
-        with:
-          path: Library
-          key: Library-${{ matrix.targetPlatform }}
-          restore-keys: Library-
-
       - if: matrix.targetPlatform == 'Android'
         uses: jlumbroso/free-disk-space@v1.3.1
 
