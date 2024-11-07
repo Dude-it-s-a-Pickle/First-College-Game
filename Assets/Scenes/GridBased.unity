@@ -1388,6 +1388,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1384144107}
   - component: {fileID: 1384144106}
+  - component: {fileID: 1384144110}
+  - component: {fileID: 1384144109}
+  - component: {fileID: 1384144108}
   m_Layer: 0
   m_Name: Level Manager
   m_TagString: Untagged
@@ -1429,6 +1432,42 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1384144108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384144105}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08bdf247f584df42bb6b288b496ad03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1384144109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384144105}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6906b8ae3681a1840b15f2d7279b95d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1384144110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384144105}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00c75b85405b68a4eba872bcae6ba052, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1630906294
 GameObject:
   m_ObjectHideFlags: 0
