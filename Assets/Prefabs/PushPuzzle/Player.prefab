@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1575244556691249128}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RightCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1575244557737607181}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LeftCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1575244557740341382}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: DownCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1575244557865655850}
   - component: {fileID: 1575244557865655853}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PlayerModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -186,7 +186,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1575244557966886113}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: CheckHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 1575244558036299598}
   - component: {fileID: 1575244558036299599}
   - component: {fileID: 1575244558036299596}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +272,7 @@ MonoBehaviour:
   ice:
     serializedVersion: 2
     m_Bits: 0
-  boxSize: {x: 0.5, y: 0.5}
+  boxSize: {x: 0.45, y: 0.45}
 --- !u!61 &1575244558036299596
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -308,7 +308,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1575244558481288169}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: UpCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
