@@ -9,7 +9,7 @@ public class MainMenuUI : MonoBehaviour
     public void Play()
     {
 
-        SceneManager.LoadScene("Platformer");
+        
 
     }
 
@@ -23,7 +23,7 @@ public class MainMenuUI : MonoBehaviour
     public void PlayPuzzle()
     {
 
-        SceneManager.LoadScene("GridBased");
+        SceneManager.LoadScene("World1");
 
     }
     

@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WinManager : MonoBehaviour
 {
 
+    public GridMovement Movement;
+    
     public ObjGoal[] objectsToCheck;
     public bool finalBool;
 
@@ -55,20 +58,19 @@ public class WinManager : MonoBehaviour
         if(finalBool)
         {
 
-            NextLevel();
+            StartCoroutine(NextLevel());
 
         }
 
     }
 
-    void NextLevel()
+    public IEnumerator NextLevel()
     {
-
-        Debug.Log("AllBoolsTrue");
+        Movement.active = false;
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene("World1");
 
     }
-
-
 
 
 }

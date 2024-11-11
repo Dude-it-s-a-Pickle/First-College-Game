@@ -13,58 +13,65 @@ public class GridMovement : MonoBehaviour
     public LayerMask ice; // New layer for ice blocks
     public Vector2 boxSize = new Vector2(1f, 1f);
 
+    public bool active = true;
     private bool isOnIce = false; // Track if the player is on ice
     private Vector2 iceDirection; // Direction to keep moving while on ice
 
     void Update()
     {
-        if (isOnIce)
-        {
-            // If the player is on ice, keep moving in the ice direction
-            MoveInDirection(iceDirection);
-            CheckIfLeftIce();
-        }
-        else
-        {
-            // Normal movement logic
-            #region WALLCHECK
-            if (!Physics2D.OverlapBox(upCheck.position, boxSize, 0f, wall))
-            {
-                if (Input.GetKeyDown(KeyCode.UpArrow))
-                {
-                    MoveInDirection(Vector2.up);
-                }
-            }
-            if (!Physics2D.OverlapBox(downCheck.position, boxSize, 0f, wall))
-            {
-                if (Input.GetKeyDown(KeyCode.DownArrow))
-                {
-                    MoveInDirection(Vector2.down);
-                }
-            }
-            if (!Physics2D.OverlapBox(leftCheck.position, boxSize, 0f, wall))
-            {
-                if (Input.GetKeyDown(KeyCode.LeftArrow))
-                {
-                    MoveInDirection(Vector2.left);
-                }
-            }
-            if (!Physics2D.OverlapBox(rightCheck.position, boxSize, 0f, wall))
-            {
-                if (Input.GetKeyDown(KeyCode.RightArrow))
-                {
-                    MoveInDirection(Vector2.right);
-                }
-            }
-            #endregion
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
+        if (active)
         {
 
-            Scene scene = SceneManager.GetActiveScene(); SceneManager.LoadScene(scene.name);
+            if (isOnIce)
+            {
+                // If the player is on ice, keep moving in the ice direction
+                MoveInDirection(iceDirection);
+                CheckIfLeftIce();
+            }
+            else
+            {
+                // Normal movement logic
+                #region WALLCHECK
+                if (!Physics2D.OverlapBox(upCheck.position, boxSize, 0f, wall))
+                {
+                    if (Input.GetKeyDown(KeyCode.UpArrow))
+                    {
+                        MoveInDirection(Vector2.up);
+                    }
+                }
+                if (!Physics2D.OverlapBox(downCheck.position, boxSize, 0f, wall))
+                {
+                    if (Input.GetKeyDown(KeyCode.DownArrow))
+                    {
+                        MoveInDirection(Vector2.down);
+                    }
+                }
+                if (!Physics2D.OverlapBox(leftCheck.position, boxSize, 0f, wall))
+                {
+                    if (Input.GetKeyDown(KeyCode.LeftArrow))
+                    {
+                        MoveInDirection(Vector2.left);
+                    }
+                }
+                if (!Physics2D.OverlapBox(rightCheck.position, boxSize, 0f, wall))
+                {
+                    if (Input.GetKeyDown(KeyCode.RightArrow))
+                    {
+                        MoveInDirection(Vector2.right);
+                    }
+                }
+                #endregion
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+
+                Scene scene = SceneManager.GetActiveScene(); SceneManager.LoadScene(scene.name);
+
+            }
 
         }
+        
 
     }
 
