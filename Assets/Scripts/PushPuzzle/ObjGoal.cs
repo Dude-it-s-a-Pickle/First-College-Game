@@ -6,13 +6,26 @@ public class ObjGoal : MonoBehaviour
 {
 
     public bool GoalOn = false;
+    public bool box = true;
     public GameObject sprite;
-    public LayerMask push;
+    public LayerMask ObjforGoal;
+
+    private void Start()
+    {
+        if(box == true)
+        {
+            ObjforGoal = LayerMask.GetMask("Pushable");
+        }
+        else if (box == false)
+        {
+            ObjforGoal = LayerMask.GetMask("Wall");
+        }
+    }
 
     private void Update()
     {
         
-        if (Physics2D.OverlapBox(transform.position, new Vector2(0.9f, 0.9f), 0f, push))
+        if (Physics2D.OverlapBox(transform.position, new Vector2(0.9f, 0.9f), 0f, ObjforGoal))
         {
 
             GoalOn = true;
@@ -29,7 +42,16 @@ public class ObjGoal : MonoBehaviour
         }
         else if (!GoalOn)
         {
-            sprite.GetComponent<SpriteRenderer>().color = Color.yellow;
+
+            if (box == true)
+            {
+                sprite.GetComponent<SpriteRenderer>().color = Color.yellow;
+            }
+            else if (box == false)
+            {
+                sprite.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.0f);
+            }
+            
         }
 
     }
