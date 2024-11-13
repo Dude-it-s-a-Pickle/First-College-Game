@@ -12,6 +12,8 @@ public class WinManager : MonoBehaviour
     public GameObject winWindow;
     public ObjGoal[] objectsToCheck;
     public bool finalBool;
+    private bool canSkip;
+    public string worldToGo;
 
     private void Start()
     {
@@ -29,8 +31,18 @@ public class WinManager : MonoBehaviour
         {
             Debug.LogWarning("No Objects assigned or found");
         }
-        
-        
+
+
+        if (canSkip)
+        {
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))
+            {
+
+                SceneManager.LoadScene(worldToGo);
+
+            }
+        }
+
     }
 
     void CheckBools()
@@ -66,10 +78,11 @@ public class WinManager : MonoBehaviour
 
     public IEnumerator NextLevel()
     {
+        canSkip = true;
         Movement.active = false;
         winWindow.SetActive(true);
         yield return new WaitForSeconds(3);
-        SceneManager.LoadScene("World1");
+        SceneManager.LoadScene(worldToGo);
 
     }
 

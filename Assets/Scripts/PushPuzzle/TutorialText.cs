@@ -18,7 +18,10 @@ public class TutorialText : MonoBehaviour
     {
         yield return new WaitForSeconds(3);
 
-        textBox.text = "Push blocks into the goals (small boxes) to win!";
+        textBox.text = "Push blocks into all the goals (small yellow boxes)";
+        yield return new WaitForSeconds(3);
+
+        textBox.text = "Put players into all the goals (small orange boxes)";
         yield return new WaitForSeconds(3);
 
         gameObject.SetActive(false);
