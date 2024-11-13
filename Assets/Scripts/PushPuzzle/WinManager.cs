@@ -9,7 +9,7 @@ public class WinManager : MonoBehaviour
 {
 
     public GridMovement Movement;
-    
+    public GameObject winWindow;
     public ObjGoal[] objectsToCheck;
     public bool finalBool;
 
@@ -67,6 +67,7 @@ public class WinManager : MonoBehaviour
     public IEnumerator NextLevel()
     {
         Movement.active = false;
+        winWindow.SetActive(true);
         yield return new WaitForSeconds(3);
         SceneManager.LoadScene("World1");
 
