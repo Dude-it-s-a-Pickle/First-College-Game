@@ -3820,41 +3820,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1 &341083395 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1575244558036299601, guid: be8249b709c2335458c6b6704cafe8bf, type: 3}
-  m_PrefabInstance: {fileID: 1575244556778369758}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &341083397 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1575244558036299599, guid: be8249b709c2335458c6b6704cafe8bf, type: 3}
-  m_PrefabInstance: {fileID: 1575244556778369758}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 341083395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6699f7a7b2d776741a5696f364d30b34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &341083399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 341083395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7b630527c5c3e44b4aeaa086c2466f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Movement: {fileID: 341083397}
-  winWindow: {fileID: 1337982377}
-  objectsToCheck:
-  - {fileID: 1813908830}
-  - {fileID: 1208172779}
-  - {fileID: 38160182}
-  finalBool: 0
 --- !u!1 &433354478
 GameObject:
   m_ObjectHideFlags: 0
@@ -6047,6 +6012,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 341083399, guid: be8249b709c2335458c6b6704cafe8bf, type: 3}
+      propertyPath: winWindow
+      value: 
+      objectReference: {fileID: 1337982377}
+    - target: {fileID: 341083399, guid: be8249b709c2335458c6b6704cafe8bf, type: 3}
+      propertyPath: objectsToCheck.Array.data[0]
+      value: 
+      objectReference: {fileID: 1813908830}
+    - target: {fileID: 341083399, guid: be8249b709c2335458c6b6704cafe8bf, type: 3}
+      propertyPath: objectsToCheck.Array.data[1]
+      value: 
+      objectReference: {fileID: 1208172779}
+    - target: {fileID: 341083399, guid: be8249b709c2335458c6b6704cafe8bf, type: 3}
+      propertyPath: objectsToCheck.Array.data[2]
+      value: 
+      objectReference: {fileID: 38160182}
     - target: {fileID: 1575244558036299598, guid: be8249b709c2335458c6b6704cafe8bf, type: 3}
       propertyPath: m_RootOrder
       value: 4
