@@ -12,30 +12,50 @@ public class TextLevels : MonoBehaviour
     const int MAX_SIZE = 24;
     const int MAX_BLOCKS = 8;
     char[,] levelLayout = new char[MAX_SIZE, MAX_SIZE];
-    float scaleFactor = (1.0f / 9.0f);
     Vector2Int levelSize;
     Vector2Int[] goalPos = new Vector2Int[MAX_BLOCKS];
     short numGoals = 0;
-    bool[] goalStatus = { false, false, false, false, false, false, false, false }; // Fix This System
     int[,] blockLayer = new int[MAX_SIZE, MAX_SIZE];
     Vector2Int[,] blockPos = new Vector2Int[MAX_BLOCKS, MAX_BLOCKS];
     Vector2Int[] blockBuffer = new Vector2Int[8];
     short[] blockNums = new short[8];
     short numBlocks = 0;
-    bool transitioning = false;
+    public bool transitioning = false;
     short levelNum = 0;
 
     // GameObject References
     public Transform playerPos;
-    public Transform wallParent;
+    public GameObject wallParent;
+    public GameObject goalParent;
     public GameObject blockPrefab;
+    public GameObject blockParentPrefab;
+    public GameObject cameraObj;
+    public levelTransition levelTransition;
+
     GameObject[,] blockGOs = new GameObject[8, MAX_BLOCKS];
-    GameObject[] wallGOs = new GameObject[MAX_SIZE * 4];
+    GameObject[] blockParents = new GameObject[8];
+    public GameObject[] wallGOs = new GameObject[MAX_SIZE * 4];
+    public GameObject[] goalGOs = new GameObject[8];
 
 
     void Start()
     {
         readLevel("Assets/Levels/lvl0-1.txt");
+    }
+
+    void Update()
+    {
+        if (!transitioning)
+        {
+            if (Input.GetKeyDown(KeyCode.W))
+                movePlayer('U');
+            if (Input.GetKeyDown(KeyCode.S))
+                movePlayer('D');
+            if (Input.GetKeyDown(KeyCode.A))
+                movePlayer('L');
+            if (Input.GetKeyDown(KeyCode.D))
+                movePlayer('R');
+        }
     }
 
     // Game Functions
@@ -65,15 +85,21 @@ public class TextLevels : MonoBehaviour
                     blockLayer[vertI, i] = line[i] - 48;
                     horizI++;
 
+                    // Creating Block Parent
+                    if (blockParents[line[i] - 49] == null)
+                    {
+                        blockParents[line[i] - 49] = Instantiate(blockParentPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+                        blockParents[line[i] - 49].name = ("Block Group " + (line[i] - 48));
+                    }
+
                     // Creating Block GameObject
-                    //Debug.Log("Block created at " + "(" + i + ", " + vertI + ")");
-                    blockGOs[line[i] - 49, blockNums[line[i] - 49]] = Instantiate(blockPrefab, new Vector3(i, vertI, 0), Quaternion.identity);
+                    blockGOs[line[i] - 49, blockNums[line[i] - 49]] = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity, blockParents[line[i] - 49].transform);
                     blockGOs[line[i] - 49, blockNums[line[i] - 49]].GetComponent<SpriteRenderer>().color = blockColor((char)(line[i] - 49));
                 }
                 else if (line[i] == 'P')
                 {
                     //Debug.Log("Player Position- (" + i + ", " + vertI + ")");
-                    playerPos.position = new Vector2(i, vertI);
+                    playerPos.position = new Vector2(i, -vertI);
                     levelLayout[vertI, i] = '0';
                     blockLayer[vertI, i] = 0;
                     horizI++;
@@ -83,14 +109,22 @@ public class TextLevels : MonoBehaviour
                     goalPos[numGoals].x = i;
                     goalPos[numGoals].y = vertI;
 
+                    // Creating Goal GameObject
+                    goalGOs[numGoals] = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity, goalParent.transform);
+                    goalGOs[numGoals].name = ("Goal " + (numGoals + 1));
+                    goalGOs[numGoals].transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                    goalGOs[numGoals].GetComponent<SpriteRenderer>().color = blockColor('F');
+                    goalGOs[numGoals].GetComponent<SpriteRenderer>().sortingOrder = 5;
+
                     levelLayout[vertI, i] = '0';
                     blockLayer[vertI, i] = 0;
+                    numGoals++;
                     horizI++;
                 }
                 else if (line[i] == 'W')
                 {
                     //Debug.Log("Wall created at " + "(" + i + ", " + vertI + ")");
-                    wallGOs[i] = Instantiate(blockPrefab, new Vector3(i, vertI, 0), Quaternion.identity, wallParent);
+                    wallGOs[i] = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity, wallParent.transform);
                     wallGOs[i].GetComponent<SpriteRenderer>().color = blockColor('W');
 
                     levelLayout[vertI, i] = 'W';
@@ -109,7 +143,7 @@ public class TextLevels : MonoBehaviour
             vertI++;
             line = levelFile.ReadLine();
         }
-        levelSize.y = vertI + 1;
+        levelSize.y = vertI;
 
         // Updating Block Count
         for (int i = 0; i < 8; i++)
@@ -120,11 +154,14 @@ public class TextLevels : MonoBehaviour
                 numBlocks++;
         }
 
-        // Setting Scale Factor
+        // Setting Camera Size Factor
         if (levelSize.x >= levelSize.y)
-            scaleFactor = (1.0f / (levelSize.x));
+            cameraObj.GetComponent<Camera>().orthographicSize = (levelSize.x-1) * 0.5f;
         else
-            scaleFactor = (1.0f / (levelSize.y));
+            cameraObj.GetComponent<Camera>().orthographicSize = (levelSize.y-1) * 0.5f;
+
+        // Setting Camera Position
+        cameraObj.transform.position = new Vector3((levelSize.x - 1) * 0.5f, (levelSize.y - 1) * -0.5f, -10f);
 
         levelFile.Close();
     }
@@ -156,7 +193,7 @@ public class TextLevels : MonoBehaviour
 
     void movePlayer(char direction)
     {
-        int xOffset = (int)playerPos.position.x, yOffset = (int)playerPos.position.y;
+        int xOffset = (int)playerPos.position.x, yOffset = -(int)playerPos.position.y;
 
         // Setting Check Direction
         if (direction == 'U')
@@ -177,7 +214,7 @@ public class TextLevels : MonoBehaviour
                 if (checkBlocks(blockLayer[yOffset, xOffset], direction))
                 {
                     // Update Player Position
-                    playerPos.position = new Vector2(xOffset, yOffset);
+                    playerPos.position = new Vector2(xOffset, -yOffset);
 
                     // Update Block Positions
                     updateBlockBuffer();
@@ -189,7 +226,7 @@ public class TextLevels : MonoBehaviour
             else
             {
                 // Update Player Position
-                playerPos.position = new Vector2(xOffset, yOffset);
+                playerPos.position = new Vector2(xOffset, -yOffset);
 
                 // Checking Goal(s) Status
                 checkGoal();
@@ -213,7 +250,7 @@ public class TextLevels : MonoBehaviour
             xOffset = 1;
 
         // Checking for movability
-        for (int i = 0; i < blockPos.GetLength(group - 1); i++)
+        for (int i = 0; i < blockNums[group-1]; i++)
         {
             int xPos = blockPos[group - 1, i].x + xOffset,
                 yPos = blockPos[group - 1, i].y + yOffset;
@@ -265,7 +302,7 @@ public class TextLevels : MonoBehaviour
             if ((blockBuffer[i].x + blockBuffer[i].y) != 0)
             {
                 // Clearing Block Positions
-                for (int j = 0; j < blockPos.GetLength(i); j++)
+                for (int j = 0; j < blockNums[i]; j++)
                 {
                     if (blockLayer[blockPos[i, j].y, blockPos[i, j].x] != i)
                         blockLayer[blockPos[i, j].y, blockPos[i, j].x] = 0;
@@ -275,17 +312,17 @@ public class TextLevels : MonoBehaviour
         for (int i = 0; i < numBlocks; i++)
         {
             // Replacing Blocks
-            for (int j = 0; j < blockPos.GetLength(i); j++)
+            for (int j = 0; j < blockNums[i]; j++)
             {
                 // Updating Block Positions
                 blockPos[i, j] += blockBuffer[i];
 
-                // Updating Block GameObjects
-                blockGOs[i, j].transform.position = new Vector3(blockBuffer[i].x, blockBuffer[i].y);
-
                 // Updates Block Layer Position
                 blockLayer[blockPos[i, j].y, blockPos[i, j].x] = i + 1;
             }
+            // Move Block Parents
+            blockParents[i].transform.position += new Vector3(blockBuffer[i].x, -blockBuffer[i].y, 0);
+
             // Resets Buffer
             blockBuffer[i].x = 0;
             blockBuffer[i].y = 0;
@@ -307,18 +344,36 @@ public class TextLevels : MonoBehaviour
         bool allGoals = true;
 
         // Goal Checks
-        for (int i = 0; i < goalPos.Length; i++)
+        for (int i = 0; i < numGoals; i++)
         {
-            if ((blockLayer[goalPos[i].y, goalPos[i].x] != 0) || (playerPos.position.y == goalPos[i].x && playerPos.position.x == goalPos[i].y))
-                goalStatus[i] = true;
+            if ((blockLayer[goalPos[i].y, goalPos[i].x] != 0) || (playerPos.position.x == goalPos[i].x && -playerPos.position.y == goalPos[i].y))
+                goalGOs[i].GetComponent<SpriteRenderer>().color = blockColor('G');
             else
-                goalStatus[i] = allGoals = false;
+            {
+                goalGOs[i].GetComponent<SpriteRenderer>().color = blockColor('F');
+                allGoals = false;
+            }
         }
 
         // Win Check
         if (allGoals)
         {
             transitioning = true;
+            levelTransition.goalPos = Screen.width;
+        }
+    }
+
+    void deleteGameObject(GameObject[] GO)
+    {
+        for (int i = 0; i < GO.Length; i++)
+        {
+            if (GO[i] == null)
+                break;
+            else
+            {
+                GO[i] = null;
+                Destroy(GO[i]);
+            }
         }
     }
 
@@ -329,11 +384,34 @@ public class TextLevels : MonoBehaviour
         Array.Clear(blockLayer, 0, blockLayer.Length);
         Array.Clear(blockPos, 0, blockPos.Length);
         Array.Clear(blockBuffer, 0, blockBuffer.Length);
+        Array.Clear(blockNums, 0, blockNums.Length);
         Array.Clear(goalPos, 0, goalPos.Length);
-        Array.Clear(goalStatus, 0, goalStatus.Length);
+
+        // Deleting GameObjects
+        deleteGameObject(wallGOs);
+        Array.Clear(wallGOs, 0, wallGOs.Length);
+        deleteGameObject(goalGOs);
+        Array.Clear(goalGOs, 0, goalGOs.Length);
+        deleteGameObject(blockParents);
+        Array.Clear(blockParents, 0, blockParents.Length);
+
+        for (int i = 0; i < blockGOs.GetLength(0); i++)
+        {
+            for (int j = 0; j < blockGOs.GetLength(1); j++)
+            {
+                if (blockGOs[i, j] == null)
+                    break;
+                else
+                {
+                    Destroy(blockGOs[i, j]);
+                    blockGOs[i, j] = null;
+                }
+            }
+        }
 
         // Reseting Numbers
         numBlocks = 0;
+        numGoals = 0;
 
         // Don't need to reset
         /*scaleFactor = 0.0f;
@@ -342,77 +420,11 @@ public class TextLevels : MonoBehaviour
         playerPos.position = new Vector2(0);*/
     }
 
-    /*
-    void drawLevel(Shader ourShader)
+    public void nextLevel()
     {
-        // Drawing Goals
-        for (int i = 0; i < goalPos.Length; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::scale(model, glm::vec3(scaleFactor));
-            model = glm::translate(model, glm::vec3((goalPos[i].x * 2) - (levelSize[0] - 1), (levelSize[1] - 1) - (goalPos[i].y * 2), 0));
-            model = glm::scale(model, glm::vec3(0.5f));
-            ourShader.setMat4("model", model);
-
-            if (!goalStatus[i])
-                ourShader.setVec4("blockColor", blockColor('F'));
-            else
-                ourShader.setVec4("blockColor", blockColor('G'));
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        }
-
-        // Drawing Player
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::scale(model, glm::vec3(scaleFactor));
-        model = glm::translate(model, glm::vec3((playerPos[0] * 2) - (levelSize[0] - 1), (levelSize[1] - 1) - (playerPos[1] * 2), 0));
-        ourShader.setMat4("model", model);
-
-        ourShader.setVec4("blockColor", blockColor('P'));
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        // Drawing Blocks
-        for (int i = 0; i < numBlocks; i++)
-        {
-            if (blockNums[i] > 0)
-            {
-                for (int j = 0; j < blockNums[i]; j++)
-                {
-                    glm::mat4 model = glm::mat4(1.0f);
-                    model = glm::scale(model, glm::vec3(scaleFactor));
-                    model = glm::translate(model, glm::vec3((blockPos[i, j].x * 2) - (levelSize[0] - 1), (levelSize[1] - 1) - (blockPos[i, j].y * 2), 0));
-                    ourShader.setMat4("model", model);
-
-                    ourShader.setVec4("blockColor", blockColor(i));
-                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-                }
-            }
-        }
-
-        // Drawing Puzzle
-        for (int i = 0; i < levelSize[1]; i++)
-        {
-            for (int j = 0; j < levelSize[0]; j++)
-            {
-                glm::mat4 model = glm::mat4(1.0f);
-                model = glm::scale(model, glm::vec3(scaleFactor));
-                model = glm::translate(model, glm::vec3((j * 2) - (levelSize[0] - 1), (levelSize[1] - 1) - (i * 2), 0));
-                ourShader.setMat4("model", model);
-
-                ourShader.setVec4("blockColor", blockColor(levelLayout[i, j]));
-
-                if (levelLayout[i, j] != '0')
-                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-            }
-        }
-
-        // Drawing Background Piece
-        model = glm::mat4(1.0f);
-        model = glm::scale(model, glm::vec3(scaleFactor));
-        model = glm::scale(model, glm::vec3(levelSize[0], levelSize[1], 1));
-
-        ourShader.setMat4("model", model);
-        ourShader.setVec4("blockColor", blockColor('0'));
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    }*/
+        clearData();
+        levelNum++;
+        string nextLevel = "Assets/Levels/lvl" + (levelNum / 5) + "-" + ((levelNum % 5) + 1) + ".txt";
+        readLevel(nextLevel);
+    }
 }
