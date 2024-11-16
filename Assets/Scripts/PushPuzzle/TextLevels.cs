@@ -12,6 +12,7 @@ public class TextLevels : MonoBehaviour
     const int MAX_SIZE = 24;
     const int MAX_BLOCKS = 8;
     char[,] levelLayout = new char[MAX_SIZE, MAX_SIZE];
+    short numWalls = 0;
     Vector2Int levelSize;
     Vector2Int[] goalPos = new Vector2Int[MAX_BLOCKS];
     short numGoals = 0;
@@ -40,7 +41,8 @@ public class TextLevels : MonoBehaviour
 
     void Start()
     {
-        readLevel("Assets/Levels/lvl0-1.txt");
+        string nextLevel = "Assets/Levels/lvl" + (levelNum / 5) + "-" + ((levelNum % 5) + 1) + ".txt";
+        readLevel(nextLevel);
     }
 
     void Update()
@@ -124,8 +126,9 @@ public class TextLevels : MonoBehaviour
                 else if (line[i] == 'W')
                 {
                     //Debug.Log("Wall created at " + "(" + i + ", " + vertI + ")");
-                    wallGOs[i] = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity, wallParent.transform);
-                    wallGOs[i].GetComponent<SpriteRenderer>().color = blockColor('W');
+                    wallGOs[numWalls] = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity, wallParent.transform);
+                    wallGOs[numWalls].GetComponent<SpriteRenderer>().color = blockColor('W');
+                    numWalls++;
 
                     levelLayout[vertI, i] = 'W';
                     blockLayer[vertI, i] = 0;
@@ -155,10 +158,10 @@ public class TextLevels : MonoBehaviour
         }
 
         // Setting Camera Size Factor
-        if (levelSize.x >= levelSize.y)
-            cameraObj.GetComponent<Camera>().orthographicSize = (levelSize.x-1) * 0.5f;
+        if ((levelSize.x / levelSize.y) >= (16f / 9f))
+            cameraObj.GetComponent<Camera>().orthographicSize = (levelSize.x) * 0.5f * (9f / 16f);
         else
-            cameraObj.GetComponent<Camera>().orthographicSize = (levelSize.y-1) * 0.5f;
+            cameraObj.GetComponent<Camera>().orthographicSize = (levelSize.y) * 0.5f;
 
         // Setting Camera Position
         cameraObj.transform.position = new Vector3((levelSize.x - 1) * 0.5f, (levelSize.y - 1) * -0.5f, -10f);
@@ -371,8 +374,8 @@ public class TextLevels : MonoBehaviour
                 break;
             else
             {
+                GO[i].GetComponent<TileManager>().deleteTile();
                 GO[i] = null;
-                Destroy(GO[i]);
             }
         }
     }
@@ -395,7 +398,7 @@ public class TextLevels : MonoBehaviour
         deleteGameObject(blockParents);
         Array.Clear(blockParents, 0, blockParents.Length);
 
-        for (int i = 0; i < blockGOs.GetLength(0); i++)
+        /*for (int i = 0; i < blockGOs.GetLength(0); i++)
         {
             for (int j = 0; j < blockGOs.GetLength(1); j++)
             {
@@ -403,15 +406,16 @@ public class TextLevels : MonoBehaviour
                     break;
                 else
                 {
-                    Destroy(blockGOs[i, j]);
+                    blockGOs[i, j].GetComponent<TileManager>().deleteTile();
                     blockGOs[i, j] = null;
                 }
             }
-        }
+        }*/
 
         // Reseting Numbers
         numBlocks = 0;
         numGoals = 0;
+        numWalls = 0;
 
         // Don't need to reset
         /*scaleFactor = 0.0f;

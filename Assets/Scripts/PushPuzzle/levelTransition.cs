@@ -17,16 +17,11 @@ public class levelTransition : MonoBehaviour
         goalPos = -Screen.width;
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        if (Mathf.Abs(goalPos - currentPos) >= (Screen.width * 0.05f))
+        if (Mathf.Abs(goalPos - currentPos) >= (Screen.width * 0.01f))
         {
             currentPos = Mathf.MoveTowards(currentPos, goalPos, moveSpeed);
-        }
-        if (currentPos >= 0 && !levelChanged)
-        {
-            levelChanged = true;
-            levelManager.nextLevel();
         }
         else if (levelChanged)
         {
@@ -35,6 +30,13 @@ public class levelTransition : MonoBehaviour
             goalPos = -Screen.width;
             levelManager.transitioning = false;
         }
+
+        if (currentPos >= 0 && !levelChanged)
+        {
+            levelChanged = true;
+            levelManager.nextLevel();
+        }
+
         gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(currentPos, 0);
     }
 }
