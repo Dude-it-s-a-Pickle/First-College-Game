@@ -22,7 +22,7 @@ public class TextLevels : MonoBehaviour
     short[] blockNums = new short[8];
     short numBlocks = 0;
     public bool transitioning = false;
-    short levelNum = 0;
+    short levelNum = 1;
 
     // GameObject References
     public Transform playerPos;
@@ -31,6 +31,7 @@ public class TextLevels : MonoBehaviour
     public GameObject blockPrefab;
     public GameObject blockParentPrefab;
     public GameObject cameraObj;
+    public GameObject playerGoal;
     public levelTransition levelTransition;
 
     GameObject[,] blockGOs = new GameObject[8, MAX_BLOCKS];
@@ -123,6 +124,18 @@ public class TextLevels : MonoBehaviour
                     numGoals++;
                     horizI++;
                 }
+                else if (line[i] == 'J')
+                {
+                    playerGoal = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity);
+                    playerGoal.name = ("Player Goal");
+                    playerGoal.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                    playerGoal.GetComponent<SpriteRenderer>().color = blockColor('K');
+                    playerGoal.GetComponent<SpriteRenderer>().sortingOrder = 5;
+
+                    levelLayout[vertI, i] = '0';
+                    blockLayer[vertI, i] = 0;
+                    horizI++;
+                }
                 else if (line[i] == 'W')
                 {
                     //Debug.Log("Wall created at " + "(" + i + ", " + vertI + ")");
@@ -179,6 +192,10 @@ public class TextLevels : MonoBehaviour
             return new Color(0.294f, 0.678f, 0.329f, 1.0f);
         else if (type == 'F')
             return new Color(0.133f, 0.2f, 0.141f, 1.0f);
+        else if (type == 'J')
+            return new Color(0.91f, 0.647f, 0.239f, 1.0f);
+        else if (type == 'K')
+            return new Color(0.15f, 0.1f, 0.0f, 1.0f);
         else if (type == 'B')
             return new Color(0.086f, 0.051f, 0.11f, 1.0f);
         else if (type == 'S')
@@ -346,14 +363,26 @@ public class TextLevels : MonoBehaviour
     {
         bool allGoals = true;
 
-        // Goal Checks
+        // Block Goal Checks
         for (int i = 0; i < numGoals; i++)
         {
-            if ((blockLayer[goalPos[i].y, goalPos[i].x] != 0) || (playerPos.position.x == goalPos[i].x && -playerPos.position.y == goalPos[i].y))
+            if ((blockLayer[goalPos[i].y, goalPos[i].x] != 0))
                 goalGOs[i].GetComponent<SpriteRenderer>().color = blockColor('G');
             else
             {
                 goalGOs[i].GetComponent<SpriteRenderer>().color = blockColor('F');
+                allGoals = false;
+            }
+        }
+
+        // Player Goal Checks
+        if (playerGoal != null)
+        {
+            if (playerPos.position == playerGoal.transform.position)
+                playerGoal.GetComponent<SpriteRenderer>().color = blockColor('J');
+            else
+            {
+                playerGoal.GetComponent<SpriteRenderer>().color = blockColor('K');
                 allGoals = false;
             }
         }
@@ -397,6 +426,7 @@ public class TextLevels : MonoBehaviour
         Array.Clear(goalGOs, 0, goalGOs.Length);
         deleteGameObject(blockParents);
         Array.Clear(blockParents, 0, blockParents.Length);
+        Destroy(playerGoal);
 
         /*for (int i = 0; i < blockGOs.GetLength(0); i++)
         {
