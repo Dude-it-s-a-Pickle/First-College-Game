@@ -39,6 +39,19 @@ public class TextLevels : MonoBehaviour
     public GameObject[] wallGOs = new GameObject[MAX_SIZE * 4];
     public GameObject[] goalGOs = new GameObject[8];
 
+    // Color Properties
+    [Header("Color Settings")]
+    public Color WallColor =  new Color(0.16f, 0.16f, 0.28f, 1.0f);
+    public Color PlayerColor =  new Color(0.811f, 0.243f, 0.243f, 1.0f);
+    public Color BlockGoalColor =  new Color(0.294f, 0.678f, 0.329f, 1.0f);
+    public Color EmptyBlockGoalColor =  new Color(0.133f, 0.2f, 0.141f, 1.0f);
+    public Color PlayerGoalColor =  new Color(0.91f, 0.647f, 0.239f, 1.0f);
+    public Color EmptyPlayerGoal =  new Color(0.15f, 0.1f, 0.0f, 1.0f);
+    public Color BlockColor = new Color(0.337f, 0.267f, 0.62f, 1.0f);
+
+    public Color Color =  new Color(0.086f, 0.051f, 0.11f, 1.0f);
+    public Color  SpaceColor =  new Color(0.6f, 0.6f, 0.741f, 1.0f);
+
 
     void Start()
     {

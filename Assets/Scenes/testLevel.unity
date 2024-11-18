@@ -382,6 +382,7 @@ MonoBehaviour:
   blockPrefab: {fileID: 3255059273007224552, guid: 8654b5905b9c6e44196248067b094b12, type: 3}
   blockParentPrefab: {fileID: 1700724171672856800, guid: 830be5f0cb931134185c54d37cbcb830, type: 3}
   cameraObj: {fileID: 1301054726}
+  playerGoal: {fileID: 0}
   levelTransition: {fileID: 523080571}
   wallGOs:
   - {fileID: 0}
@@ -489,6 +490,15 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  WallColor: {r: 0.16, g: 0.16, b: 0.28, a: 1}
+  PlayerColor: {r: 0.811, g: 0.243, b: 0.243, a: 1}
+  BlockGoalColor: {r: 0.294, g: 0.678, b: 0.329, a: 1}
+  EmptyBlockGoalColor: {r: 0.133, g: 0.2, b: 0.141, a: 1}
+  PlayerGoalColor: {r: 0.91, g: 0.647, b: 0.239, a: 1}
+  EmptyPlayerGoal: {r: 0.15, g: 0.1, b: 0, a: 1}
+  BlockColor: {r: 0.337, g: 0.267, b: 0.62, a: 1}
+  Color: {r: 0.086, g: 0.051, b: 0.11, a: 1}
+  SpaceColor: {r: 0.6, g: 0.6, b: 0.741, a: 1}
 --- !u!4 &950204191
 Transform:
   m_ObjectHideFlags: 0
