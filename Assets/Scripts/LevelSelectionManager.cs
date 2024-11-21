@@ -51,7 +51,7 @@ public class LevelSelectionManager : MonoBehaviour
 
     void Start()
     {
-        string nextLevel = "Assets/Levels/LevelSelection.txt";
+        string nextLevel = "Assets/Resources/Levels/LevelSelection.txt";
         readLevel(nextLevel);
     }
 
