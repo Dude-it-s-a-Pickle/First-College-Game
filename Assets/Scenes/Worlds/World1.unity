@@ -276,7 +276,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentPos: 0
   goalPos: -640
-  moveSpeed: 75
+  moveSpeed: 60
   levelManager: {fileID: 950204190}
 --- !u!1 &829469196
 GameObject:
@@ -452,6 +452,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transitioning: 0
+  numUndos: 0
+  undoing: 0
+  levelInfo: {x: 1, y: 5}
   playerPos: {fileID: 1737105316}
   wallParent: {fileID: 179727287}
   goalParent: {fileID: 6147425}

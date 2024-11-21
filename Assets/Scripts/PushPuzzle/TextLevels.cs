@@ -6,6 +6,7 @@ using System.IO;
 using System;
 using Unity.VisualScripting;
 using UnityEngine.PlayerLoop;
+using UnityEngine.SceneManagement;
 
 
 public class TextLevels : MonoBehaviour
@@ -31,7 +32,8 @@ public class TextLevels : MonoBehaviour
     public short numUndos = 0;
     public bool undoing = false;
     bool firstMove = false;
-    short levelNum = 0;
+    short levelNum = 1;
+    public Vector2Int levelInfo = new Vector2Int(0, 0); // X is world, Y is max levels
 
     // GameObject References
     public Transform playerPos;
@@ -46,7 +48,7 @@ public class TextLevels : MonoBehaviour
 
     GameObject[,] blockGOs = new GameObject[8, MAX_BLOCKS];
     GameObject[] blockParents = new GameObject[8];
-    GameObject[] wallGOs = new GameObject[MAX_SIZE * 4];
+    GameObject[] wallGOs = new GameObject[MAX_SIZE * 6];
     GameObject[] goalGOs = new GameObject[8];
 
     // Color Properties
@@ -65,7 +67,7 @@ public class TextLevels : MonoBehaviour
 
     void Start()
     {
-        string nextLevel = "Assets/Levels/lvl" + (levelNum / 5) + "-" + ((levelNum % 5) + 1) + ".txt";
+        string nextLevel = "Assets/Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
         readLevel(nextLevel);
     }
 
@@ -610,7 +612,13 @@ public class TextLevels : MonoBehaviour
     {
         clearData();
         levelNum++;
-        string nextLevel = "Assets/Levels/lvl" + (levelNum / 5) + "-" + ((levelNum % 5) + 1) + ".txt";
-        readLevel(nextLevel);
+
+        if (levelNum > levelInfo.y)
+            SceneManager.LoadScene("LevelSelection");
+        else
+        {
+            string nextLevel = "Assets/Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
+            readLevel(nextLevel);
+        }
     }
 }
