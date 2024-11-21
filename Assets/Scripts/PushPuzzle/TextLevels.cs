@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 using System;
 using Unity.VisualScripting;
+using UnityEngine.PlayerLoop;
 
 
 public class TextLevels : MonoBehaviour
@@ -25,8 +27,10 @@ public class TextLevels : MonoBehaviour
     short numBlocks = 0;
     Vector2Int playerBuffer = new Vector2Int(0, 0);
     public bool transitioning = false;
-    public Vector2Int[,] undoCache = new Vector2Int[9, MAX_UNDOS]; // First is for Player, Last 8 are for blocks
-    short numUndos = 0;
+    Vector2Int[,] undoCache = new Vector2Int[9, MAX_UNDOS]; // First is for Player, Last 8 are for blocks
+    public short numUndos = 0;
+    public bool undoing = false;
+    bool firstMove = false;
     short levelNum = 0;
 
     // GameObject References
@@ -37,6 +41,7 @@ public class TextLevels : MonoBehaviour
     public GameObject blockParentPrefab;
     public GameObject cameraObj;
     public GameObject playerGoal;
+    public Slider undoSlider; 
     public levelTransition levelTransition;
 
     GameObject[,] blockGOs = new GameObject[8, MAX_BLOCKS];
@@ -81,13 +86,14 @@ public class TextLevels : MonoBehaviour
             // Undoing
             if (Input.GetKeyDown(KeyCode.U))
                 useUndo();
+            if (Input.GetKeyDown(KeyCode.V))
+                outputCache();
         }
     }
 
     // Game Functions
     void readLevel(String levelName)
     {
-        //StreamReader levelFile = new StreamReader("C:\\Users\\gapam\\Desktop\\TestFileReader\\TestFileReader\\levels\\lvl0-1.txt");
         StreamReader levelFile = new StreamReader(levelName);
         String line;
         int vertI = 0;
@@ -202,6 +208,9 @@ public class TextLevels : MonoBehaviour
         // Setting Camera Position
         cameraObj.transform.position = new Vector3((levelSize.x - 1) * 0.5f, (levelSize.y - 1) * -0.5f, -10f);
 
+        // Setting Undo Slider
+        undoSlider.value = 0f;
+
         levelFile.Close();
     }
     
@@ -262,11 +271,21 @@ public class TextLevels : MonoBehaviour
                     // Update Player Position
                     playerBuffer = new Vector2Int((int)playerPos.position.x, (int)playerPos.position.y) + offset;
                     updateUndo(0, offset);
-                    if (numUndos < MAX_UNDOS)
-                        numUndos++;
+
+                    // Resetting Undo Cache
+                    if (undoing)
+                    {
+                        numUndos = 0;
+                        firstMove = true;
+                        undoing = false;
+                    }
 
                     // Update Block Positions
                     updateBuffer(true);
+
+                    // Update Num Undos
+                    if (numUndos < MAX_UNDOS)
+                        numUndos++;
                 }
             }
             else
@@ -274,12 +293,31 @@ public class TextLevels : MonoBehaviour
                 // Update Player Position
                 playerBuffer = new Vector2Int((int)playerPos.position.x, (int)playerPos.position.y) + offset;
                 updateUndo(0, offset);
-                if (numUndos < MAX_UNDOS)
-                    numUndos++;
+
+                // Resetting Undo Cache
+                if (undoing)
+                {
+                    numUndos = 0;
+                    firstMove = true;
+                    undoing = false;
+                }
+
 
                 // Updating Positions
                 updateBuffer(true);
+
+                // Update Num Undos
+                if (numUndos < MAX_UNDOS && !firstMove)
+                    numUndos++;
+
+                // Cancelling first move
+                if (firstMove)
+                    firstMove = false;
             }
+
+            // I don't like that I have to put this here, but its better than running it each frame :(
+            // Updating Undo Slider
+            undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
         }
     }
 
@@ -398,6 +436,9 @@ public class TextLevels : MonoBehaviour
             }
         }
 
+        // Updating Undo Slider
+        undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
+
         // Checking Goal(s) Status
         checkGoal();
     }
@@ -444,7 +485,7 @@ public class TextLevels : MonoBehaviour
         if (allGoals)
         {
             transitioning = true;
-            levelTransition.goalPos = Screen.width;
+            levelTransition.goalPos = 1280;
         }
     }
 
@@ -499,7 +540,10 @@ public class TextLevels : MonoBehaviour
     {
         if (numUndos < MAX_UNDOS)
         {
-            undoCache[group, numUndos] = offset;
+            if (group > 0)
+                undoCache[group, numUndos] = offset;
+            else
+                undoCache[group, numUndos] = offset;
         }
         else
         {
@@ -518,6 +562,7 @@ public class TextLevels : MonoBehaviour
         {
             // Updates number of Undos
             numUndos--;
+            undoing = true;
 
             // Moving Player
             playerBuffer = new Vector2Int((int)playerPos.position.x, (int)playerPos.position.y) + -undoCache[0, numUndos];
@@ -538,16 +583,29 @@ public class TextLevels : MonoBehaviour
 
             // Updating Movement Buffer
             updateBuffer(false);
-
-
-            // Update Undo Cache
-            for (int i = 0; i < numBlocks + 1; i++)
-            {
-                undoCache[i, numUndos] = new Vector2Int(0, 0);
-            }
         }
     }
 
+    void outputCache()
+    {
+        Debug.Log("\n");
+        string tempString = "";
+        for (int i = 0; i < numBlocks + 1; i++)
+        {
+            if (i == 0)
+                tempString = "Player- ";
+            else
+                tempString = "Block " + i + "- ";
+
+            for (int j = 0; j < numUndos+1; j++)
+            {
+                tempString += undoCache[i, j] + " ";
+            }
+
+            Debug.Log(tempString);
+        }
+    }
+    
     public void nextLevel()
     {
         clearData();
