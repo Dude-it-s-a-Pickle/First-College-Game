@@ -51,7 +51,7 @@ public class LevelSelectionManager : MonoBehaviour
 
     void Start()
     {
-        string nextLevel = "Assets/Resources/Levels/LevelSelection.txt";
+        string nextLevel = "Levels/LevelSelection";
         readLevel(nextLevel);
     }
 
@@ -70,8 +70,9 @@ public class LevelSelectionManager : MonoBehaviour
     // Game Functions
     void readLevel(String levelName)
     {
-        //StreamReader levelFile = new StreamReader("C:\\Users\\gapam\\Desktop\\TestFileReader\\TestFileReader\\levels\\lvl0-1.txt");
-        StreamReader levelFile = new StreamReader(levelName);
+        var text = Resources.Load<TextAsset>(levelName);
+        MemoryStream stream = new MemoryStream(text.bytes);
+        StreamReader levelFile = new StreamReader(stream);
         String line;
         int vertI = 0;
         int horizI = 0;

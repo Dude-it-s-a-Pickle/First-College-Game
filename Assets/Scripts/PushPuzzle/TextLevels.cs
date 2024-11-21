@@ -7,6 +7,7 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
+using System.Runtime.InteropServices.ComTypes;
 
 
 public class TextLevels : MonoBehaviour
@@ -67,7 +68,8 @@ public class TextLevels : MonoBehaviour
 
     void Start()
     {
-        string nextLevel = "Assets/Resources/Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
+        string nextLevel = "Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
+
         readLevel(nextLevel);
     }
 
@@ -96,7 +98,9 @@ public class TextLevels : MonoBehaviour
     // Game Functions
     void readLevel(String levelName)
     {
-        StreamReader levelFile = new StreamReader(levelName);
+        var text = Resources.Load<TextAsset>(levelName);
+        MemoryStream stream = new MemoryStream(text.bytes);
+        StreamReader levelFile = new StreamReader(stream);
         String line;
         int vertI = 0;
         int horizI = 0;
@@ -617,7 +621,7 @@ public class TextLevels : MonoBehaviour
             SceneManager.LoadScene("LevelSelection");
         else
         {
-            string nextLevel = "Assets/Resources/Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
+            string nextLevel = "Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
             readLevel(nextLevel);
         }
     }
