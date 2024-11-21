@@ -8,33 +8,18 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Main Menu.unity
     guid: a77aa77e3960f2f429f2585f59f86fec
+  - enabled: 1
+    path: Assets/Scenes/LevelSelection.unity
+    guid: 1f3d35b3d70a11f4d880e13b539036e8
   - enabled: 1
     path: Assets/Scenes/Platformer.unity
     guid: 719a848c5f6bed44f92a2561cc96224a
   - enabled: 1
-    path: Assets/Scenes/GridBased.unity
-    guid: 75df542cea3bc9748b204614b77bc5ca
-  - enabled: 1
-    path: Assets/Scenes/World1/World1.unity
-    guid: c3aa33ff1635b1041888c33b22b2285d
-  - enabled: 1
-    path: Assets/Scenes/World1/1-1.unity
-    guid: fdb770ac74b720d44834d14befa7e493
-  - enabled: 1
-    path: Assets/Scenes/World1/1-2.unity
-    guid: 2f0a0026e57a2be41adc52110b878664
-  - enabled: 1
-    path: Assets/Scenes/World1/1-3.unity
-    guid: 6a2346ec5ac98564eb4243fd7b32d8c0
-  - enabled: 1
-    path: Assets/Scenes/World1/1-4.unity
-    guid: 6b153fb4805d92b48a3d5f8cf25322c4
-  - enabled: 1
-    path: Assets/Scenes/World1/1-5.unity
-    guid: 640a2f18bd290da46a9b8e65aaf8b5b0
+    path: Assets/Scenes/Worlds/World1.unity
+    guid: 992041cebb312f142909159be5c69007
   - enabled: 1
     path: Assets/Scenes/World1/1-S.unity
     guid: 10155cc69c48d1147ace09fa2a7e4231
