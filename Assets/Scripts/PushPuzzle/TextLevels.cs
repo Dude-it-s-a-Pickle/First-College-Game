@@ -67,7 +67,7 @@ public class TextLevels : MonoBehaviour
 
     void Start()
     {
-        string nextLevel = "Assets/Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
+        string nextLevel = "Assets/Resources/Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
         readLevel(nextLevel);
     }
 
@@ -617,7 +617,7 @@ public class TextLevels : MonoBehaviour
             SceneManager.LoadScene("LevelSelection");
         else
         {
-            string nextLevel = "Assets/Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
+            string nextLevel = "Assets/Resources/Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
             readLevel(nextLevel);
         }
     }
