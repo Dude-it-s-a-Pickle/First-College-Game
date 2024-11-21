@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 using System.Runtime.InteropServices.ComTypes;
+using static Cinemachine.DocumentationSortingAttribute;
 
 
 public class TextLevels : MonoBehaviour
@@ -68,7 +69,7 @@ public class TextLevels : MonoBehaviour
 
     void Start()
     {
-        string nextLevel = "Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
+        string nextLevel = "Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum;
 
         readLevel(nextLevel);
     }
@@ -621,7 +622,7 @@ public class TextLevels : MonoBehaviour
             SceneManager.LoadScene("LevelSelection");
         else
         {
-            string nextLevel = "Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum + ".txt";
+            string nextLevel = "Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum;
             readLevel(nextLevel);
         }
     }
