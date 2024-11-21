@@ -13,8 +13,8 @@ public class levelTransition : MonoBehaviour
 
     void Start()
     {
-        currentPos = -Screen.width;
-        goalPos = -Screen.width;
+        currentPos = -1280;
+        goalPos = -1280;
     }
 
     void FixedUpdate()
@@ -26,8 +26,8 @@ public class levelTransition : MonoBehaviour
         else if (levelChanged)
         {
             levelChanged = false;
-            currentPos = -Screen.width;
-            goalPos = -Screen.width;
+            currentPos = -1280;
+            goalPos = -1280;
             levelManager.transitioning = false;
         }
 
