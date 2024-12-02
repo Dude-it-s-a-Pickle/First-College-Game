@@ -30,10 +30,9 @@ public class TextLevels : MonoBehaviour
     short numBlocks = 0;
     Vector2Int playerBuffer = new Vector2Int(0, 0);
     public bool transitioning = false;
-    Vector2Int[,] undoCache = new Vector2Int[9, MAX_UNDOS]; // First is for Player, Last 8 are for blocks
-    public short numUndos = 0;
+    Vector2Int[] undoCache = new Vector2Int[9]; // First is for Player, Last 8 are for blocks
+    public short numUndos = 8;
     public bool undoing = false;
-    bool firstMove = false;
     short levelNum = 1;
     public Vector2Int levelInfo = new Vector2Int(0, 0); // X is world, Y is max levels
 
@@ -64,14 +63,15 @@ public class TextLevels : MonoBehaviour
     public Color BlockColor = new Color(0.337f, 0.267f, 0.62f, 1.0f);
 
     public Color Color =  new Color(0.086f, 0.051f, 0.11f, 1.0f);
-    public Color  SpaceColor =  new Color(0.6f, 0.6f, 0.741f, 1.0f);
+    public Color SpaceColor =  new Color(0.6f, 0.6f, 0.741f, 1.0f);
 
 
     void Start()
     {
         string nextLevel = "Levels/World" + levelInfo.x + "/lvl" + levelInfo.x + "-" + levelNum;
-
         readLevel(nextLevel);
+
+        undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
     }
 
     void Update()
@@ -91,6 +91,8 @@ public class TextLevels : MonoBehaviour
             // Undoing
             if (Input.GetKeyDown(KeyCode.U))
                 useUndo();
+            if (Input.GetKeyDown(KeyCode.Y))
+                saveUndo();
             if (Input.GetKeyDown(KeyCode.V))
                 outputCache();
         }
@@ -252,79 +254,41 @@ public class TextLevels : MonoBehaviour
 
     void movePlayer(char direction)
     {
-        Vector2Int offset = new Vector2Int(0, 0);
+        Vector2Int offset = new Vector2Int((int)playerPos.position.x, -(int)playerPos.position.y);
 
         // Setting Check Direction
         if (direction == 'U')
-            offset.y = 1;
+            offset.y += -1;
         else if (direction == 'D')
-            offset.y = -1;
+            offset.y += 1;
         else if (direction == 'L')
-            offset.x = -1;
+            offset.x += -1;
         else if (direction == 'R')
-            offset.x = 1;
+            offset.x += 1;
 
-        // Checks for walls
-        int xPos = (int)playerPos.position.x + offset.x;
-        int yPos = -(int)playerPos.position.y - offset.y;
-
-        if (levelLayout[yPos, xPos] != 'W')
+        // Checks for walls        
+        if (levelLayout[offset.y, offset.x] != 'W')
         {
             // Check for Blocks
-            if (blockLayer[yPos, xPos] >= 1 && blockLayer[yPos, xPos] <= 9)
+            if (blockLayer[offset.y, offset.x] >= 1 && blockLayer[offset.y, offset.x] <= 9)
             {
-                if (checkBlocks(blockLayer[yPos, xPos], direction))
+                if (checkBlocks(blockLayer[offset.y, offset.x], direction))
                 {
-                    // Update Player Position
-                    playerBuffer = new Vector2Int((int)playerPos.position.x, (int)playerPos.position.y) + offset;
-                    updateUndo(0, offset);
+                    // Update Player Buffer
+                    playerBuffer = new Vector2Int(offset.x, -offset.y);
 
-                    // Resetting Undo Cache
-                    if (undoing)
-                    {
-                        numUndos = 0;
-                        firstMove = true;
-                        undoing = false;
-                    }
-
-                    // Update Block Positions
-                    updateBuffer(true);
-
-                    // Update Num Undos
-                    if (numUndos < MAX_UNDOS)
-                        numUndos++;
+                    // Update  Psitions
+                    updateBuffer();
                 }
             }
             else
             {
-                // Update Player Position
-                playerBuffer = new Vector2Int((int)playerPos.position.x, (int)playerPos.position.y) + offset;
-                updateUndo(0, offset);
+                // Update Player Buffer
+                playerBuffer = new Vector2Int(offset.x, -offset.y);
 
-                // Resetting Undo Cache
-                if (undoing)
-                {
-                    numUndos = 0;
-                    firstMove = true;
-                    undoing = false;
-                }
-
-
-                // Updating Positions
-                updateBuffer(true);
-
-                // Update Num Undos
-                if (numUndos < MAX_UNDOS && !firstMove)
-                    numUndos++;
-
-                // Cancelling first move
-                if (firstMove)
-                    firstMove = false;
+                // Update  Psitions
+                updateBuffer();
             }
-
-            // I don't like that I have to put this here, but its better than running it each frame :(
-            // Updating Undo Slider
-            undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
         }
     }
 
@@ -366,32 +330,26 @@ public class TextLevels : MonoBehaviour
         }
         // No Collisions
         if (canMove)
-            addBlockBuffer(group, direction);
+            addBlockBuffer(group, new Vector2Int(xOffset, yOffset));
         else
             clearBlockBuffer();
 
         return canMove;
     }
 
-    void addBlockBuffer(int group, char direction)
+    void addBlockBuffer(int group, Vector2Int offset)
     {
         blocksMoved = true;
 
         // Adds group movement
-        if ((blockBuffer[group - 1].x + blockBuffer[group - 1].y) == 0) // Makes sure buffer isn't slready written
+        if ((blockBuffer[group - 1].x + blockBuffer[group - 1].y) == 0) // Makes sure buffer isn't already written
         {
-            if (direction == 'U')
-                blockBuffer[group - 1].y -= 1;
-            else if (direction == 'D')
-                blockBuffer[group - 1].y += 1;
-            else if (direction == 'L')
-                blockBuffer[group - 1].x -= 1;
-            else if (direction == 'R')
-                blockBuffer[group - 1].x += 1;
+            blockBuffer[group-1].x = offset.x;
+            blockBuffer[group-1].y = offset.y;
         }
     }
 
-    void updateBuffer(bool update)
+    void updateBuffer()
     {
         // Moving Player (Player Undo updated in movePlayer)
         playerPos.position = new Vector3(playerBuffer.x, playerBuffer.y, 0);
@@ -425,27 +383,11 @@ public class TextLevels : MonoBehaviour
                 // Move Block Parents
                 blockParents[i].transform.position += new Vector3(blockBuffer[i].x, -blockBuffer[i].y, 0);
 
-                // Updating Undo
-                if (update)
-                    updateUndo(i + 1, blockBuffer[i]);
-
                 // Resets Buffer
                 blockBuffer[i].x = 0;
                 blockBuffer[i].y = 0;
             }
         }
-        else
-        {
-            // Setting Block Movements to be Blank
-            for (int i = 0; i < numBlocks; i++) // Not sure if it should be (numBlocks + 1)??
-            {
-                updateUndo(i + 1, new Vector2Int(0, 0));
-            }
-        }
-
-        // Updating Undo Slider
-        undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
-
         // Checking Goal(s) Status
         checkGoal();
     }
@@ -531,7 +473,7 @@ public class TextLevels : MonoBehaviour
         Destroy(playerGoal);
 
         // Reseting Numbers
-        numUndos = 0;
+        numUndos = 8;
         numBlocks = 0;
         numGoals = 0;
         numWalls = 0;
@@ -543,74 +485,66 @@ public class TextLevels : MonoBehaviour
         playerPos.position = new Vector2(0);*/
     }
 
-    void updateUndo(int group, Vector2Int offset)
+    void saveUndo()
     {
-        if (numUndos < MAX_UNDOS)
+        // Checking if Undo Possible
+        if (numUndos > 0)
         {
-            if (group > 0)
-                undoCache[group, numUndos] = offset;
-            else
-                undoCache[group, numUndos] = offset;
-        }
-        else
-        {
-            // Shifting forward caches
-            undoCache[group, 0] = undoCache[group, 1];
-            for (int i = 0; i < MAX_UNDOS - 1; i++)
-                undoCache[group, i] = undoCache[group, i + 1];
-            undoCache[group, MAX_UNDOS - 1] = offset;
+            numUndos--;
+            undoing = true;
+            undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
+
+            undoCache[0] = new Vector2Int((int)playerPos.position.x, -(int)playerPos.position.y);
+
+            for (int i = 0; i < numBlocks; i++)
+            {
+                undoCache[i + 1] = new Vector2Int((int)blockParents[i].transform.position.x, -(int)blockParents[i].transform.position.y);
+            }
         }
     }
 
     void useUndo()
     {
         // Check if undo is possible
-        if (numUndos > 0)
+        if (undoing)
         {
-            // Updates number of Undos
-            numUndos--;
-            undoing = true;
+            undoing = false;
+            undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
 
             // Moving Player
-            playerBuffer = new Vector2Int((int)playerPos.position.x, (int)playerPos.position.y) + -undoCache[0, numUndos];
+            playerBuffer = undoCache[0] * new Vector2Int(1, -1);
 
             // Moving Blocks
             for (int i = 1; i < numBlocks + 1; i++)
             {
                 // I really need to switch char directions to Vector2Ints (please do this in future commit)
-                if (undoCache[i, numUndos].x == 1)
-                    addBlockBuffer(i, 'L');
-                else if (undoCache[i, numUndos].x == -1)
-                    addBlockBuffer(i, 'R');
-                else if (undoCache[i, numUndos].y == 1)
-                    addBlockBuffer(i, 'U');
-                else if (undoCache[i, numUndos].y == -1)
-                    addBlockBuffer(i, 'D');
+                Vector2Int offset = undoCache[i] - new Vector2Int((int)blockParents[i - 1].transform.position.x, -(int)blockParents[i - 1].transform.position.y);
+                addBlockBuffer(i, offset);
             }
 
             // Updating Movement Buffer
-            updateBuffer(false);
+            updateBuffer();
         }
     }
 
     void outputCache()
     {
-        Debug.Log("\n");
-        string tempString = "";
-        for (int i = 0; i < numBlocks + 1; i++)
-        {
-            if (i == 0)
-                tempString = "Player- ";
-            else
-                tempString = "Block " + i + "- ";
+        //Debug.Log("\n");
+        //string tempString = "";
+        //for (int i = 0; i < numBlocks + 1; i++)
+        //{
+        //    if (i == 0)
+        //        tempString = "Player- ";
+        //    else
+        //        tempString = "Block " + i + "- ";
 
-            for (int j = 0; j < numUndos+1; j++)
-            {
-                tempString += undoCache[i, j] + " ";
-            }
+        //    for (int j = 0; j < numUndos + 1; j++)
+        //    {
+        //        tempString += undoCache[i, j] + " ";
+        //    }
 
-            Debug.Log(tempString);
-        }
+        //    Debug.Log(tempString);
+        //}
     }
     
     public void nextLevel()
