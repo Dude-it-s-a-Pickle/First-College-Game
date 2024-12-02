@@ -93,8 +93,13 @@ public class TextLevels : MonoBehaviour
                 useUndo();
             if (Input.GetKeyDown(KeyCode.Y))
                 saveUndo();
-            if (Input.GetKeyDown(KeyCode.V))
-                outputCache();
+
+            // Resetting Level
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                levelNum--;
+                nextLevel();
+            }
         }
     }
 
@@ -218,7 +223,7 @@ public class TextLevels : MonoBehaviour
         cameraObj.transform.position = new Vector3((levelSize.x - 1) * 0.5f, (levelSize.y - 1) * -0.5f, -10f);
 
         // Setting Undo Slider
-        undoSlider.value = 0f;
+        undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
 
         levelFile.Close();
     }
@@ -477,6 +482,7 @@ public class TextLevels : MonoBehaviour
         numBlocks = 0;
         numGoals = 0;
         numWalls = 0;
+        undoing = false;
 
         // Don't need to reset
         /*scaleFactor = 0.0f;
@@ -525,26 +531,6 @@ public class TextLevels : MonoBehaviour
             // Updating Movement Buffer
             updateBuffer();
         }
-    }
-
-    void outputCache()
-    {
-        //Debug.Log("\n");
-        //string tempString = "";
-        //for (int i = 0; i < numBlocks + 1; i++)
-        //{
-        //    if (i == 0)
-        //        tempString = "Player- ";
-        //    else
-        //        tempString = "Block " + i + "- ";
-
-        //    for (int j = 0; j < numUndos + 1; j++)
-        //    {
-        //        tempString += undoCache[i, j] + " ";
-        //    }
-
-        //    Debug.Log(tempString);
-        //}
     }
     
     public void nextLevel()
