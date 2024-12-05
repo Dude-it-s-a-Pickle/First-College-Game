@@ -11,16 +11,19 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Main Menu.unity
     guid: a77aa77e3960f2f429f2585f59f86fec
+  - enabled: 0
+    path: Assets/Scenes/World1/1-S.unity
+    guid: 10155cc69c48d1147ace09fa2a7e4231
+  - enabled: 0
+    path: Assets/Scenes/Platformer.unity
+    guid: 719a848c5f6bed44f92a2561cc96224a
   - enabled: 1
     path: Assets/Scenes/LevelSelection.unity
     guid: 1f3d35b3d70a11f4d880e13b539036e8
   - enabled: 1
-    path: Assets/Scenes/Platformer.unity
-    guid: 719a848c5f6bed44f92a2561cc96224a
-  - enabled: 1
     path: Assets/Scenes/Worlds/World1.unity
     guid: 992041cebb312f142909159be5c69007
   - enabled: 1
-    path: Assets/Scenes/World1/1-S.unity
-    guid: 10155cc69c48d1147ace09fa2a7e4231
+    path: Assets/Scenes/Worlds/World2.unity
+    guid: ab00fe3f47dfe054b8ad9225d3784561
   m_configObjects: {}

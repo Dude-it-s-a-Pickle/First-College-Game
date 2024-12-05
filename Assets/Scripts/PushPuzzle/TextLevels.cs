@@ -15,7 +15,7 @@ public class TextLevels : MonoBehaviour
 {
     // Global Level Variables
     const int MAX_SIZE = 24;
-    const int MAX_BLOCKS = 8;
+    const int MAX_BLOCKS = 25;
     const int MAX_UNDOS = 8;
     char[,] levelLayout = new char[MAX_SIZE, MAX_SIZE];
     short numWalls = 0;
@@ -50,7 +50,7 @@ public class TextLevels : MonoBehaviour
     GameObject[,] blockGOs = new GameObject[8, MAX_BLOCKS];
     GameObject[] blockParents = new GameObject[8];
     GameObject[] wallGOs = new GameObject[MAX_SIZE * 6];
-    GameObject[] goalGOs = new GameObject[8];
+    GameObject[] goalGOs = new GameObject[MAX_BLOCKS];
 
     // Color Properties
     [Header("Color Settings")]
