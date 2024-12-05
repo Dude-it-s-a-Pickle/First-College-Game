@@ -15,12 +15,13 @@ public class TextLevels : MonoBehaviour
 {
     // Global Level Variables
     const int MAX_SIZE = 24;
-    const int MAX_BLOCKS = 8;
+    const int MAX_BLOCKS = 25;
     const int MAX_UNDOS = 8;
     char[,] levelLayout = new char[MAX_SIZE, MAX_SIZE];
     short numWalls = 0;
     Vector2Int levelSize;
     Vector2Int[] goalPos = new Vector2Int[MAX_BLOCKS];
+    bool[] goalStatus = new bool[MAX_BLOCKS];
     short numGoals = 0;
     int[,] blockLayer = new int[MAX_SIZE, MAX_SIZE];
     Vector2Int[,] blockPos = new Vector2Int[MAX_BLOCKS, MAX_BLOCKS];
@@ -33,7 +34,7 @@ public class TextLevels : MonoBehaviour
     Vector2Int[] undoCache = new Vector2Int[9]; // First is for Player, Last 8 are for blocks
     public short numUndos = 8;
     public bool undoing = false;
-    short levelNum = 1;
+    short levelNum = 3;
     public Vector2Int levelInfo = new Vector2Int(0, 0); // X is world, Y is max levels
 
     // GameObject References
@@ -47,19 +48,29 @@ public class TextLevels : MonoBehaviour
     public Slider undoSlider; 
     public levelTransition levelTransition;
 
+    public GameObject undoSymbol;
     GameObject[,] blockGOs = new GameObject[8, MAX_BLOCKS];
     GameObject[] blockParents = new GameObject[8];
     GameObject[] wallGOs = new GameObject[MAX_SIZE * 6];
-    GameObject[] goalGOs = new GameObject[8];
+    GameObject[] goalGOs = new GameObject[MAX_BLOCKS];
+
+    // Effects Prefabs
+    public GameObject blockParticle;
 
     // Color Properties
-    [Header("Color Settings")]
+    [Header("Graphics Settings")]
+    public Sprite pickleTexture;
+    public Sprite pickleJarTexture;
+    public Sprite blockTexture;
+    public Sprite goalTexture;
+    public Sprite wallTexture;
+
     public Color WallColor =  new Color(0.16f, 0.16f, 0.28f, 1.0f);
-    public Color PlayerColor =  new Color(0.811f, 0.243f, 0.243f, 1.0f);
+    public Color PlayerColor/* =  new Color(0.811f, 0.243f, 0.243f, 1.0f)*/;
     public Color BlockGoalColor =  new Color(0.294f, 0.678f, 0.329f, 1.0f);
     public Color EmptyBlockGoalColor =  new Color(0.133f, 0.2f, 0.141f, 1.0f);
-    public Color PlayerGoalColor =  new Color(0.91f, 0.647f, 0.239f, 1.0f);
-    public Color EmptyPlayerGoal =  new Color(0.15f, 0.1f, 0.0f, 1.0f);
+    //public Color PlayerGoalColor =  new Color(0.91f, 0.647f, 0.239f, 1.0f);
+    //public Color EmptyPlayerGoal =  new Color(0.15f, 0.1f, 0.0f, 1.0f);
     public Color BlockColor = new Color(0.337f, 0.267f, 0.62f, 1.0f);
 
     public Color Color =  new Color(0.086f, 0.051f, 0.11f, 1.0f);
@@ -141,6 +152,7 @@ public class TextLevels : MonoBehaviour
                     // Creating Block GameObject
                     blockGOs[line[i] - 49, blockNums[line[i] - 49]] = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity, blockParents[line[i] - 49].transform);
                     blockGOs[line[i] - 49, blockNums[line[i] - 49]].GetComponent<SpriteRenderer>().color = blockColor((char)(line[i] - 49));
+                    blockGOs[line[i] - 49, blockNums[line[i] - 49]].GetComponent<SpriteRenderer>().sprite = blockTexture;
                 }
                 else if (line[i] == 'P')
                 {
@@ -160,6 +172,7 @@ public class TextLevels : MonoBehaviour
                     goalGOs[numGoals].name = ("Goal " + (numGoals + 1));
                     goalGOs[numGoals].transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
                     goalGOs[numGoals].GetComponent<SpriteRenderer>().color = blockColor('F');
+                    goalGOs[numGoals].GetComponent<SpriteRenderer>().sprite = goalTexture;
                     goalGOs[numGoals].GetComponent<SpriteRenderer>().sortingOrder = 5;
 
                     levelLayout[vertI, i] = '0';
@@ -171,8 +184,8 @@ public class TextLevels : MonoBehaviour
                 {
                     playerGoal = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity);
                     playerGoal.name = ("Player Goal");
-                    playerGoal.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-                    playerGoal.GetComponent<SpriteRenderer>().color = blockColor('K');
+                    //playerGoal.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                    playerGoal.GetComponent<SpriteRenderer>().sprite = pickleJarTexture;
                     playerGoal.GetComponent<SpriteRenderer>().sortingOrder = 5;
 
                     levelLayout[vertI, i] = '0';
@@ -184,6 +197,7 @@ public class TextLevels : MonoBehaviour
                     //Debug.Log("Wall created at " + "(" + i + ", " + vertI + ")");
                     wallGOs[numWalls] = Instantiate(blockPrefab, new Vector3(i, -vertI, 0), Quaternion.identity, wallParent.transform);
                     wallGOs[numWalls].GetComponent<SpriteRenderer>().color = blockColor('W');
+                    wallGOs[numWalls].GetComponent<SpriteRenderer>().sprite = wallTexture;
                     numWalls++;
 
                     levelLayout[vertI, i] = 'W';
@@ -213,7 +227,7 @@ public class TextLevels : MonoBehaviour
                 numBlocks++;
         }
 
-        // Setting Camera Size Factor
+            // Setting Camera Size Factor
         if ((levelSize.x / levelSize.y) >= (16f / 9f))
             cameraObj.GetComponent<Camera>().orthographicSize = (levelSize.x) * 0.5f * (9f / 16f);
         else
@@ -231,17 +245,17 @@ public class TextLevels : MonoBehaviour
     Color blockColor(char type)
     {
         if (type == 'W')
-            return new Color(0.16f, 0.16f, 0.28f, 1.0f);
+            return WallColor;
         else if (type == 'P')
-            return new Color(0.811f, 0.243f, 0.243f, 1.0f);
+            return PlayerColor;
         else if (type == 'G')
-            return new Color(0.294f, 0.678f, 0.329f, 1.0f);
+            return BlockGoalColor;
         else if (type == 'F')
-            return new Color(0.133f, 0.2f, 0.141f, 1.0f);
-        else if (type == 'J')
-            return new Color(0.91f, 0.647f, 0.239f, 1.0f);
-        else if (type == 'K')
-            return new Color(0.15f, 0.1f, 0.0f, 1.0f);
+            return EmptyBlockGoalColor;
+        //else if (type == 'J')
+        //    return new Color(0.91f, 0.647f, 0.239f, 1.0f);
+        //else if (type == 'K')
+        //    return new Color(0.15f, 0.1f, 0.0f, 1.0f);
         else if (type == 'B')
             return new Color(0.086f, 0.051f, 0.11f, 1.0f);
         else if (type == 'S')
@@ -415,10 +429,21 @@ public class TextLevels : MonoBehaviour
         for (int i = 0; i < numGoals; i++)
         {
             if ((blockLayer[goalPos[i].y, goalPos[i].x] != 0))
+            {
                 goalGOs[i].GetComponent<SpriteRenderer>().color = blockColor('G');
+
+                // Summons Particle (Conditionally)
+                if (!goalStatus[i+1])
+                {
+                    GameObject tempParticle = Instantiate(blockParticle, new Vector3(goalPos[i].x, -goalPos[i].y, 0), Quaternion.identity);
+                    tempParticle.GetComponent<ParticleSystem>().startColor = blockColor((char)blockLayer[goalPos[i].y, goalPos[i].x]);
+                    goalStatus[i+1] = true;
+                }
+            }
             else
             {
                 goalGOs[i].GetComponent<SpriteRenderer>().color = blockColor('F');
+                goalStatus[i+1] = false;
                 allGoals = false;
             }
         }
@@ -427,11 +452,21 @@ public class TextLevels : MonoBehaviour
         if (playerGoal != null)
         {
             if (playerPos.position == playerGoal.transform.position)
-                playerGoal.GetComponent<SpriteRenderer>().color = blockColor('J');
+            {
+                //playerGoal.GetComponent<SpriteRenderer>().color = blockColor('J');
+
+                if (!goalStatus[0])
+                {
+                    GameObject tempParticle = Instantiate(blockParticle, playerPos.position, Quaternion.identity);
+                    tempParticle.GetComponent<ParticleSystem>().startColor = blockColor('P');
+                    goalStatus[0] = true;
+                }
+            }
             else
             {
-                playerGoal.GetComponent<SpriteRenderer>().color = blockColor('K');
+                //playerGoal.GetComponent<SpriteRenderer>().color = blockColor('K');
                 allGoals = false;
+                goalStatus[0] = false;
             }
         }
 
@@ -467,6 +502,7 @@ public class TextLevels : MonoBehaviour
         Array.Clear(blockNums, 0, blockNums.Length);
         Array.Clear(goalPos, 0, goalPos.Length);
         Array.Clear(undoCache, 0, undoCache.Length); // First is for Player, Last 8 are for blocks
+        Array.Clear(goalStatus, 0, goalStatus.Length);
 
         // Deleting GameObjects
         deleteGameObject(wallGOs);
@@ -506,6 +542,10 @@ public class TextLevels : MonoBehaviour
             {
                 undoCache[i + 1] = new Vector2Int((int)blockParents[i].transform.position.x, -(int)blockParents[i].transform.position.y);
             }
+
+            // Placing Undo Player Symbol
+            undoSymbol.SetActive(true);
+            undoSymbol.transform.position = playerPos.position;
         }
     }
 
@@ -516,6 +556,9 @@ public class TextLevels : MonoBehaviour
         {
             undoing = false;
             undoSlider.value = ((float)numUndos / (float)MAX_UNDOS);
+
+            // Hiding Player Undo Symbol
+            undoSymbol.SetActive(false);
 
             // Moving Player
             playerBuffer = undoCache[0] * new Vector2Int(1, -1);
@@ -535,6 +578,7 @@ public class TextLevels : MonoBehaviour
     
     public void nextLevel()
     {
+        undoSymbol.SetActive(false);
         clearData();
         levelNum++;
 
