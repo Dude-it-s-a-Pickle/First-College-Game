@@ -34,7 +34,7 @@ public class TextLevels : MonoBehaviour
     Vector2Int[] undoCache = new Vector2Int[9]; // First is for Player, Last 8 are for blocks
     public short numUndos = 8;
     public bool undoing = false;
-    short levelNum = 3;
+    short levelNum = 1;
     public Vector2Int levelInfo = new Vector2Int(0, 0); // X is world, Y is max levels
 
     // GameObject References
